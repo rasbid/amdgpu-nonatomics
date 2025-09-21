@@ -672,17 +672,17 @@ bool kgd2kfd_device_init(struct kfd_dev *kfd,
 	 * supported.
 	 */
 	kfd->pci_atomic_requested = amdgpu_amdkfd_have_atomics_support(kfd->adev);
-	if (!kfd->pci_atomic_requested &&
-	    kfd->device_info.needs_pci_atomics &&
-	    (!kfd->device_info.no_atomic_fw_version ||
-	     kfd->mec_fw_version < kfd->device_info.no_atomic_fw_version)) {
-		dev_info(kfd_device,
-			 "skipped device %x:%x, PCI rejects atomics %d<%d\n",
-			 kfd->adev->pdev->vendor, kfd->adev->pdev->device,
-			 kfd->mec_fw_version,
-			 kfd->device_info.no_atomic_fw_version);
-		return false;
-	}
+       if (!kfd->pci_atomic_requested &&
+           kfd->device_info.needs_pci_atomics &&
+           (!kfd->device_info.no_atomic_fw_version ||
+            kfd->mec_fw_version < kfd->device_info.no_atomic_fw_version)) {
+               dev_info(kfd_device,
+                        "skipped device %x:%x, PCI rejects atomics %d<%d\n",
+                        kfd->adev->pdev->vendor, kfd->adev->pdev->device,
+                        kfd->mec_fw_version,
+                        kfd->device_info.no_atomic_fw_version);
+               /* PCIe atomics are optional for initialization; continue. */
+       }
 
 	first_vmid_kfd = ffs(gpu_resources->compute_vmid_bitmap)-1;
 	last_vmid_kfd = fls(gpu_resources->compute_vmid_bitmap)-1;
